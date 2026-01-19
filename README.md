@@ -25,7 +25,7 @@ Filters out clusters based on the binding events distribution using the mean fra
 - apply_area_filter: Whether to apply area filter (default: True)  
 - max_area: Maximum area for filtering (default: 0.25)  
 
-##TdCDF_of_single_clusters.py
+## TdCDF_of_single_clusters.py  
 Extract the dark times of individual clusters. Then, fit the dark time distribution of each cluster with a mono-exponential function to determine a mean dark time per cluster.  
 
 **Input Files Required:**  
