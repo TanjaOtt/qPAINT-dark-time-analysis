@@ -5,7 +5,7 @@ Scripts that process DBSCANed SMLM data to extract dark times for quantitative P
 - TdCDF_of_single_clusters: extract dark times of a single cluster and determine the mean dark time
 
 ## DBSCAN_cluster_filtering.py
-Filters out clusters based on the binding events distribution using the mean frame, the standard deviation of the mean frame, and the area
+Filters out clusters based on the binding events distribution using the mean frame, the standard deviation of the mean frame, and the area  
 **Input Files Required:**  
 - dbscan.hdf5 or clustered_hdf5      
 - dbscan_centers.hdf5 or clustered_centers.hdf5  
