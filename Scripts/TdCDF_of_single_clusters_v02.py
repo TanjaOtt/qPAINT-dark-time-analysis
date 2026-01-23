@@ -28,7 +28,7 @@
 #     - num_histogram_bins: Number of bins for histogram (default: 100)
 ######################################################################################
 
-INPUT_DIR = r"C:\Users\pcoffice79\Desktop\test"
+INPUT_DIR = r"Folder path"
 # Set to None to process all files, or set to a specific file path (absolute or relative)
 SPECIFIC_FILE_PATH = None
 # Example: SPECIFIC_FILE_PATH = r"file_path"
@@ -504,3 +504,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
