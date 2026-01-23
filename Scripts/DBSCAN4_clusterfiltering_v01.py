@@ -31,7 +31,7 @@ import numpy as np
 from scipy.stats import norm
 
 
-INPUT_DIR = r"E:\SMLM_FAMP\20251020_Vidhya\251020_FAM134B_SiR_Hy5_1nM_4"
+INPUT_DIR = r"Folder path"
 
 
 @dataclass
@@ -360,5 +360,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
