@@ -46,10 +46,14 @@ Extract the dark times of individual clusters. Then, fit the dark time distribut
 
 **Parameters (adjustable in Config class):**  
 - exposure_time: Camera exposure time in seconds (default: 0.15s)  
-- min_points_for_fit: Minimum points required for fitting (default: 6)  
+- min_points_for_fit: Minimum points required for fitting (default: 6)
+- min_histogram_bins: int = 5
 - max_td_value: Maximum allowed Td value in seconds (default: 5000s)  
 - num_sample_fits: Number of sample fits to plot (default: 10)  
-- num_histogram_bins: Number of bins for histogram (default: 100)  
+- num_histogram_bins: Number of bins for histogram (default: 100)
+- bin_min: float = 0.0 # Minimum bin value for cumulative frequency
+- bin_max: float = 5000.0 # Maximum bin value for cumulative frequency
+- bin_step: float = 10.0 # Bin step size for cumulative frequency
 
 ## Install  
 ```
