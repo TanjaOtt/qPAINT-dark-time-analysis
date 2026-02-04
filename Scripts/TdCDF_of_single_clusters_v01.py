@@ -58,9 +58,9 @@ class Config:
     input_dir: Path
     output_dir: Path = None # Make output_dir optional
     exposure_time: float = 0.15  # s
-    min_points_for_fit: int = 10
-    min_histogram_bins: int = 100
-    max_td_value: float = 10e3  # s
+    min_points_for_fit: int = 6
+    min_histogram_bins: int = 5
+    max_td_value: float = 5e3  # s
     num_sample_fits: int = 10
     num_histogram_bins: int = 100
     bin_min: float = 0.0 # Minimum bin value for cumulative frequency
@@ -431,3 +431,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
