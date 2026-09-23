@@ -15,9 +15,11 @@
 #         - *_sample_fits.png: Visualization of sample fits
 
 # Usage:
-#     1. Set your input directory in the main() function below
-#     2. (Optional) Adjust analysis parameters in the Config class if needed
-#     3. Run the script
+#     1. Set your input directory (INPUT_DIR) in the the user input section below (multiple HDF5 files are recursively processed within the specified folder and its subfolders) 
+#     2. Set the desired file suffix (HDF5_SUFFIX) of the HDF5 files containing your clustered localization data in the user input section below 
+#        (only HDF5 files with this file suffix will be processed) 
+#     3. (Optional) Adjust analysis parameters in the Config class if needed
+#     4. Run the script
 
 # Parameters (adjustable in Config class):
 #     - exposure_time: Camera exposure time in seconds (default: 0.15s)
@@ -27,7 +29,9 @@
 #     - num_histogram_bins: Number of bins for histogram (default: 100)
 ######################################################################################
 
+#User input section
 INPUT_DIR = r"Folder path"
+HDF5_SUFFIX = '_dbscan'
 
 
 
@@ -41,16 +45,12 @@ import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 
 """
-Please set input_dir where you have your HDF5 and YAML files
-all the files in the directory will be processed
-"""
-
-
-"""
-If you want to set your own parameters, please modify the Config class
+If you want to set your own parameters, please modify the Config class. 
+If output_dir is not specified, it will automatically create an output folder in the input directory and all its subfolders. 
 """
 @dataclass
 class Config:
@@ -93,7 +93,15 @@ def read_input_files(hdf5_file: Path, yaml_file: Path, config:Config) -> Tuple[p
         
     # Read YAML file
     with open(yaml_file, 'r') as yaml_file:
-        yaml_docs = list(yaml.safe_load_all(yaml_file))
+        try:
+            # Use safe_load instead of load to avoid Python-specific tags
+            yaml_docs = list(yaml.safe_load_all(yaml_file))
+        except yaml.YAMLError as e:
+            # Fallback to basic loader if safe_load fails
+            yaml_file.seek(0)  # Reset file pointer to beginning
+            yaml_docs = []
+            for doc in yaml.load_all(yaml_file, Loader=yaml.BaseLoader):
+                yaml_docs.append(doc)
     
     if 'dark' not in df.columns:
         original_name = hdf5_file.stem
@@ -139,7 +147,7 @@ def calculate_and_save_dark(df: pd.DataFrame, yaml_docs: List, output_dir: Path,
     # Create footer for intermediate YAML
     footer_template = {
         'dark_time_calculation': {
-            'dark_time_calculateion_method': 'frame_difference within groups',
+            'dark_time_calculateion_method': 'frame_erence within groups',
         }
     }
     
@@ -187,7 +195,7 @@ def fit_cumulative_frequency(df: pd.DataFrame, config: Config) -> pd.DataFrame:
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
         # Calculate cumulative frequency 
-        cum_freq = np.cumsum(hist) * np.diff(bin_edges)
+        cum_freq = np.cumsum(hist) * np.(bin_edges)
         
         try:
             # Initial parameter guesses
@@ -237,7 +245,7 @@ def plot_sample_fits(df: pd.DataFrame, config: Config, output_path: Path):
         
         # Calculate histogram and cumulative frequency
         hist, bin_edges = np.histogram(dark_values, bins=min(50, len(dark_values)), density=True)
-        cum_freq = np.cumsum(hist) * np.diff(bin_edges)
+        cum_freq = np.cumsum(hist) * np.(bin_edges)
         x_data = bin_edges[1:]
         
         # Get Td and calculate fit
@@ -341,62 +349,68 @@ def save_all_results(df: pd.DataFrame, yaml_docs: List, config: Config, original
 def process_all_files(config: Config):
     """Process all files using configuration parameters"""
     try:
-        # Ensure output directory exists at the start
-        config.output_dir.mkdir(parents=True, exist_ok=True)
-        print(f"\nOuput directory verified: {config.output_dir}")
+        print(f"\nSearching for HDF5 files in: {config.input_dir} and subfolders")
+        all_hdf5_files = list(config.input_dir.rglob('*.hdf5'))
+        hdf5_files = [f for f in all_hdf5_files if f.name.endswith(HDF5_SUFFIX)]
 
-        print(f"\nSearching for HDF5 files in: {config.input_dir}")
-        all_hdf5_files = list(config.input_dir.glob('*.hdf5'))
-        hdf5_files = [f for f in all_hdf5_files]
-        # If you want to read hdf5 files that ends with '_filtered_in.hdf5'
-        # hdf5_files = [f for f in all_hdf5_files if f.name.endswith('_filtered_in.hdf5')]    
-        # If you want to read hdf5 files that contains 'dbscan' and 'in'
-        #hdf5_files = [f for f in all_hdf5_files if 'dbscan' in f.name.lower() and 'in' in f.name.lower()]
-
-        print(f"\nSearching for HDF5 files in: {config.input_dir}")
-        print(f"Found {len(hdf5_files)} HDF5 files")
+        print(f"\nFound {len(hdf5_files)} HDF5 files ending with '{HDF5_SUFFIX}'")
         for f in hdf5_files:
-            print(f"  {f.name}") 
- 
-    
+            print(f"  {f}")
+
         if not hdf5_files:
-            print("No .hdf5 files found in input directory")
+            print("No .hdf5 files found in input directory or subfolders")
             return
-        
+
+        # Group files by their parent directory
+        files_by_folder = defaultdict(list)
+        for f in hdf5_files:
+            files_by_folder[f.parent].append(f)
+
         results = []
-        for hdf5_file in hdf5_files:
-            print(f"\nChecking file: {hdf5_file.name}")
-            # Skip files that are already processed
-            if '_TdCDF.hdf5' in hdf5_file.name:
-                print(f"Skipping processed file: {hdf5_file.name}")
-                continue
-            # Find corresponding YAML file
-            yaml_file = hdf5_file.with_suffix('.yaml')
-            if not yaml_file.exists():
-                print(f"Warning: No matching YAML file for {hdf5_file.name}")
-                continue
-            
-            try:
-                print(f"\nProcessing file pair:")
-                print(f"HDF5: {hdf5_file.name}")
-                print(f"YAML: {yaml_file.name}")
-                
-                # Read input files
-                df, yaml_docs = read_input_files(hdf5_file, yaml_file, config)
-            
-                # Process data
-                df = fit_cumulative_frequency(df, config)
-                
-                # Print summary
-                print("\nTd values for each group:")
-                td_summary = df.groupby('group')['Td'].first().reset_index()
-                print(td_summary)
-            
-                # Save all results
-                if '_dark.hdf5' in hdf5_file.name:
-                    original_name = hdf5_file.stem.replace('_dark.hdf5','_TdCDF.hdf5')
-                else:
-                    original_name = hdf5_file.stem  
+        for folder, files in files_by_folder.items():
+            # Only create dark_time_analysis in folders that have at least one matching file
+            output_dir = folder / 'dark_time_analysis' 
+            for hdf5_file in files:
+                print(f"\nChecking file: {hdf5_file.name}")
+                if '_TdCDF.hdf5' in hdf5_file.name:
+                    print(f"Skipping processed file: {hdf5_file.name}")
+                    continue
+                yaml_file = hdf5_file.with_suffix('.yaml')
+                if not yaml_file.exists():
+                    print(f"Warning: No matching YAML file for {hdf5_file.name}")
+                    continue
+
+                # Create a new config for this file with the subfolder output_dir
+                file_config = Config(
+                    input_dir=folder,
+                    output_dir=output_dir,
+                    exposure_time=config.exposure_time,
+                    min_points_for_fit=config.min_points_for_fit,
+                    min_histogram_bins=config.min_histogram_bins,
+                    max_td_value=config.max_td_value,
+                    num_sample_fits=config.num_sample_fits,
+                    num_histogram_bins=config.num_histogram_bins,
+                    bin_min=config.bin_min,
+                    bin_max=config.bin_max,
+                    bin_step=config.bin_step
+                )
+
+                try:
+                    print(f"\nProcessing file pair:")
+                    print(f"HDF5: {hdf5_file.name}")
+                    print(f"YAML: {yaml_file.name}")
+
+                    df, yaml_docs = read_input_files(hdf5_file, yaml_file, file_config)
+                    df = fit_cumulative_frequency(df, file_config)
+
+                    print("\nTd values for each group:")
+                    td_summary = df.groupby('group')['Td'].first().reset_index()
+                    print(td_summary)
+
+                    if '_dark.hdf5' in hdf5_file.name:
+                        original_name = hdf5_file.stem.replace('_dark.hdf5','_TdCDF.hdf5')
+                    else:
+                        original_name = hdf5_file.stem  
 
                 result = save_all_results(df, yaml_docs, config, original_name)
                 results.append(result)
