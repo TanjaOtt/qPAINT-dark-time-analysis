@@ -412,8 +412,8 @@ def process_all_files(config: Config):
                     else:
                         original_name = hdf5_file.stem  
 
-                result = save_all_results(df, yaml_docs, file_config, original_name)
-                results.append(result)
+                    result = save_all_results(df, yaml_docs, file_config, original_name)
+                    results.append(result)
             
                 except Exception as e:
                     print(f"Error processing {hdf5_file.name}: {str(e)}")
