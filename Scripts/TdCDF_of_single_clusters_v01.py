@@ -31,7 +31,7 @@
 
 #User input section
 INPUT_DIR = r"Folder path"
-HDF5_SUFFIX = '_dbscan'
+HDF5_SUFFIX = '_dbscan.hdf5'    # e.g. '_dbscan.hdf5', Use '.hdf5' to process all HDF5 files.
 
 
 
@@ -50,13 +50,13 @@ from collections import defaultdict
 
 """
 If you want to set your own parameters, please modify the Config class. 
-If output_dir is not specified, it will automatically create an output folder in the input directory and all its subfolders. 
+An output folder will be created automatically in the input directory and all its subfolders. 
 """
 @dataclass
 class Config:
     """Configuration parameters for the analysis"""
     input_dir: Path
-    output_dir: Path = None # Make output_dir optional
+    output_dir: Path = None # Do not change.
     exposure_time: float = 0.15  # s
     min_points_for_fit: int = 6
     min_histogram_bins: int = 5
