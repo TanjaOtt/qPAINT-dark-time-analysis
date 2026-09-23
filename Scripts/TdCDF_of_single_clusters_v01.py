@@ -147,7 +147,7 @@ def calculate_and_save_dark(df: pd.DataFrame, yaml_docs: List, output_dir: Path,
     # Create footer for intermediate YAML
     footer_template = {
         'dark_time_calculation': {
-            'dark_time_calculateion_method': 'frame_erence within groups',
+            'dark_time_calculateion_method': 'frame_difference within groups',
         }
     }
     
@@ -195,7 +195,7 @@ def fit_cumulative_frequency(df: pd.DataFrame, config: Config) -> pd.DataFrame:
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
         # Calculate cumulative frequency 
-        cum_freq = np.cumsum(hist) * np.(bin_edges)
+        cum_freq = np.cumsum(hist) * np.diff(bin_edges)
         
         try:
             # Initial parameter guesses
@@ -245,7 +245,7 @@ def plot_sample_fits(df: pd.DataFrame, config: Config, output_path: Path):
         
         # Calculate histogram and cumulative frequency
         hist, bin_edges = np.histogram(dark_values, bins=min(50, len(dark_values)), density=True)
-        cum_freq = np.cumsum(hist) * np.(bin_edges)
+        cum_freq = np.cumsum(hist) * np.diff(bin_edges)
         x_data = bin_edges[1:]
         
         # Get Td and calculate fit
