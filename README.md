@@ -21,11 +21,12 @@ Extract the dark times of individual clusters. Then, fit the dark time distribut
    - *_sample_fits.png: Visualization of sample fits  
 
 **Usage:**  
-1. Set your input directory (INPUT_DIR) in the the user input section below (multiple HDF5 files are recursively processed within the specified folder and its subfolders)   
-2. Set the desired file suffix (HDF5_SUFFIX) of the HDF5 files containing your clustered localization data in the user input section below 
+1. Open TdCDF_of_single_clusters_v01.py
+2. Set your input directory (INPUT_DIR) in the the user input section (multiple HDF5 files are recursively processed within the specified folder and its subfolders)   
+3. Set the desired file suffix (HDF5_SUFFIX) of the HDF5 files containing your clustered localization data in the user input section below 
    (only HDF5 files with this file suffix will be processed) 
-3. (Optional) Adjust analysis parameters in the Config class if needed
-4. Run the script  
+4. (Optional) Adjust analysis parameters in the Config class if needed
+5. Run the script  
 
 **Parameters (adjustable in Config class):**  
 - exposure_time: Camera exposure time in seconds (default: 0.15s)  
@@ -45,9 +46,9 @@ conda activate dark_time_analysis
 conda install numpy pandas scipy matplotlib h5py pyyaml pathlib
 ```  
 ## Run  
-Set the folder where you have dbscan.hdf5 & DBSCAN.yaml & dbscan_centers.hdf5 & dbscsan_centers.yaml 
+Set the folder where you have stored the TdCDF_of_single_clusters_v01.py file after you edited the user input section in the file and adapted Config class if needed.
 ```
-python TdCDF_of_single_clusters.py
+python TdCDF_of_single_clusters_v01.py
 ```
 
 
