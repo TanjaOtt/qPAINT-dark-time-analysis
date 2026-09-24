@@ -1,29 +1,10 @@
-# qPAINT-dark-time-analysis
+# qPAINT-dark-time-analysis batch processing
 
-Scripts that process DBSCANed SMLM data to extract dark times for quantitative PAINT
-- DBSCAN_clusterfiltering: cluster filtering of dbscaned clusters using Picasso software
+This script extends the functionality of the TdCDF_of_single_clusters_v01.py script from https://github.com/SoohyenJang/qPAINT-dark-time-analysis/tree/main/Scripts
+by enabeling batch processing of input files.The existing analysis procedure for individual files was retained and an output folder will be created automatically in the input directory and all its subfolders.
+
+Script that process DBSCANed SMLM data to extract dark times for quantitative PAINT
 - TdCDF_of_single_clusters: extract dark times of a single cluster and determine the mean dark time
-
-## DBSCAN_cluster_filtering.py
-Filters out clusters based on the binding events distribution using the mean frame, the standard deviation of the mean frame, and the area  
-**Input Files Required:**  
-- dbscan.hdf5 or clustered_hdf5      
-- dbscan_centers.hdf5 or clustered_centers.hdf5  
-- dbscan.yaml or clustered.yaml 
-- dbscan_centers.yaml or clustered_centers.yaml
-
-**Output Files Generated:**
-1. *_filtered_in.hdf5 & *_filtered_in.yaml: Contains filtered-in data  
-2. *_filtered_out.hdf5 & *_filtered_out.yaml: Contains filtered-out data  
-3. *_centers_filtered_in.hdf5 & *_centers_filtered_in.yaml: Contains centers filtered-in data  
-4. *_centers_filtered_out.hdf5 & *_centers_filtered_out.yaml: Contains centers filtered-out data  
-
-**Usage:**  
-1. Set your input directory in the main() function below and run  
-
-**Parameters (adjustable in Config class):**  
-- apply_area_filter: Whether to apply area filter (default: True)  
-- max_area: Maximum area for filtering (default: 0.25)  
 
 ## TdCDF_of_single_clusters.py  
 Extract the dark times of individual clusters. Then, fit the dark time distribution of each cluster with a mono-exponential function to determine a mean dark time per cluster.  
@@ -40,9 +21,11 @@ Extract the dark times of individual clusters. Then, fit the dark time distribut
    - *_sample_fits.png: Visualization of sample fits  
 
 **Usage:**  
-1. Set your input directory in the main() function below  
-2. (Optional) Adjust analysis parameters in the Config class if needed  
-3. Run the script  
+1. Set your input directory (INPUT_DIR) in the the user input section below (multiple HDF5 files are recursively processed within the specified folder and its subfolders)   
+2. Set the desired file suffix (HDF5_SUFFIX) of the HDF5 files containing your clustered localization data in the user input section below 
+   (only HDF5 files with this file suffix will be processed) 
+3. (Optional) Adjust analysis parameters in the Config class if needed
+4. Run the script  
 
 **Parameters (adjustable in Config class):**  
 - exposure_time: Camera exposure time in seconds (default: 0.15s)  
