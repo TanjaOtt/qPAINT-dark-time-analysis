@@ -1,7 +1,7 @@
 # qPAINT-dark-time-analysis batch processing
 
 This script extends the functionality of the TdCDF_of_single_clusters_v01.py script from https://github.com/SoohyenJang/qPAINT-dark-time-analysis/tree/main/Scripts
-by enabeling batch processing of input files.The existing analysis procedure for individual files was retained and an output folder will be created automatically in the input directory and all its subfolders.
+by enabeling batch processing of input files. Multiple HDF5 files are recursively processed within a specified folder and all its subfolders, and an output folder is created automatically in the input directory and all its subfolders. Only files with a user defined file suffix are processed within the specified folder and subfolders. The existing analysis procedure for individual files was retained.
 
 Script that process DBSCANed SMLM data to extract dark times for quantitative PAINT
 - TdCDF_of_single_clusters: extract dark times of a single cluster and determine the mean dark time
